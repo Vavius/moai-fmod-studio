@@ -226,7 +226,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 	if ( result != FMOD_OK ) {
 		return;
 	}
-
+    
 	this->mSound = sound;
 }
 

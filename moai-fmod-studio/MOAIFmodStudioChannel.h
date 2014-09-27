@@ -27,18 +27,24 @@ private:
 		PAUSED,
 	} PlayState;
 
+	float	mPitch;
+	float	mPan;
 	float	mVolume;
 	bool	mPaused;
 	bool	mLooping;
 	PlayState mPlayState;
 
-	//----------------------------------------------------------------//'
+	//----------------------------------------------------------------//
+	static int	_getPan				( lua_State* L );
+	static int	_getPitch			( lua_State* L );
 	static int	_getVolume			( lua_State* L );
 	static int  _isPlaying			( lua_State* L );
 	static int	_moveVolume			( lua_State* L );
 	static int	_play				( lua_State* L );
 	static int	_seekVolume			( lua_State* L );
 	static int	_setPaused			( lua_State* L );
+	static int	_setPan				( lua_State* L );
+	static int	_setPitch			( lua_State* L );
 	static int	_setVolume			( lua_State* L );
 	static int  _setLooping			( lua_State* L );
 	static int	_stop				( lua_State* L );
@@ -52,11 +58,16 @@ public:
 
 	enum {
 		ATTR_VOLUME,
+		ATTR_FREQUENCY,
+		ATTR_PITCH,
+		ATTR_PAN,
 		TOTAL_ATTR,
 	};
 
 	//----------------------------------------------------------------//
 	bool		ApplyAttrOp			( u32 attrID, MOAIAttrOp& attrOp, u32 op );
+	float		GetPan				();
+	float		GetPitch			();
 	float		GetVolume			();
 				MOAIFmodStudioChannel	();
 				~MOAIFmodStudioChannel	();
@@ -64,6 +75,8 @@ public:
 	void		RegisterLuaClass	( MOAILuaState& state );
 	void		RegisterLuaFuncs	( MOAILuaState& state );
 	void		SetPaused			( bool paused );
+	void		SetPan				( float pan );
+	void		SetPitch			( float pitch );	
 	void		SetVolume			( float volume );
 	void		Stop				();
 	STLString	ToString			();

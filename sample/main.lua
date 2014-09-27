@@ -20,9 +20,9 @@ channel = MOAIFmodStudioChannel.new()
 sound = MOAIFmodStudioSound.new()
 sound:loadSFX('mono16.wav')
 
+channel:setLooping(true)
 channel:play(sound)
-
-
+channel:seekAttr(MOAIFmodStudioChannel.ATTR_PAN, -1, 2):setMode(MOAITimer.PING_PONG)
 
 -- MOAIUntzSystem.initialize ()
 

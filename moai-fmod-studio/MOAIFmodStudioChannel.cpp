@@ -11,17 +11,47 @@
 //================================================================//
 
 //----------------------------------------------------------------//
-/**	@name	getVolume
- @text	Returns the current volume of the channel.
- 
- @in	MOAIFmodStudioChannel self
- @out	number volume				the volume currently set in this channel.
+/**	@name	getPan
+	@text	Returns the current pan of the channel.
+
+	@in		MOAIFmodStudioChannel 	self
+	@out	number pan				the pan currently set in this channel.
+*/
+int MOAIFmodStudioChannel::_getPan ( lua_State* L ) {
+	
+	MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "U" )
+	
+	state.Push ( state, self->GetPan ());
+	return 1;
+}
+
+//----------------------------------------------------------------//
+/**	@name	getPitch
+	@text	Returns the current pitch of the channel.
+
+	@in		MOAIFmodStudioChannel 	self
+	@out	number pitch			the pitch currently set in this channel.
  */
+int MOAIFmodStudioChannel::_getPitch ( lua_State* L ) {
+	
+	MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "U" )
+	
+	state.Push ( state, self->GetPitch ());
+	return 1;
+}
+
+//----------------------------------------------------------------//
+/**	@name	getVolume
+	@text	Returns the current volume of the channel.
+
+	@in		MOAIFmodStudioChannel 	self
+	@out	number volume			the volume currently set in this channel.
+*/
 int MOAIFmodStudioChannel::_getVolume ( lua_State* L ) {
 	
 	MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "U" )
 	
-	lua_pushnumber ( state, self->GetVolume ());
+	state.Push ( state, self->GetVolume ());
 	return 1;
 }
 
@@ -39,7 +69,7 @@ int MOAIFmodStudioChannel::_isPlaying ( lua_State* L ) {
 	bool isPlaying = self->mPlayState == PLAYING;
 
 	if ( self->mSound ) {
-		lua_pushboolean ( state, isPlaying );
+		state.Push ( state, isPlaying );
 		return 1; 
 	}
 	return 0;
@@ -127,6 +157,41 @@ int MOAIFmodStudioChannel::_seekVolume ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+/**	@name	setPan
+	@text	Immediately sets the pan for this channel.
+
+	@in		MOAIFmodStudioChannel 	self
+	@in		number pan				The pan of this channel.
+	@out	nil
+*/
+int MOAIFmodStudioChannel::_setPan ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "UN" )
+
+	float pan = state.GetValue < float >( 2, 0.0f );
+	self->SetPan ( pan );
+
+	return 0;
+}
+
+
+//----------------------------------------------------------------//
+/**	@name	setPitch
+	@text	Immediately sets the pitch of this channel.
+
+	@in		MOAIFmodStudioChannel 	self
+	@in		number pitch			The pitch of this channel.
+	@out	nil
+*/
+int MOAIFmodStudioChannel::_setPitch ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "UN" )
+
+	float pitch = state.GetValue < float >( 2, 1.0f );
+	self->SetPitch ( pitch );
+
+	return 0;
+}
+
+//----------------------------------------------------------------//
 /**	@name	setVolume
 	@text	Immediately sets the volume of this channel.
 
@@ -209,8 +274,30 @@ bool MOAIFmodStudioChannel::ApplyAttrOp ( u32 attrID, MOAIAttrOp& attrOp, u32 op
 			this->SetVolume ( this->mVolume );
 			return true;
 		}
+
+		if ( attrID == ATTR_PITCH ) {
+			this->mPitch = attrOp.Apply ( this->mPitch, op, MOAIAttrOp::ATTR_READ_WRITE );
+			this->SetPitch ( this->mPitch );
+			return true;
+		}
+
+		if ( attrID == ATTR_PAN ) {
+			this->mPan = attrOp.Apply ( this->mPan, op, MOAIAttrOp::ATTR_READ_WRITE );
+			this->SetPan ( this->mPan );
+			return true;
+		}
 	}
 	return false;
+}
+
+//----------------------------------------------------------------//
+float MOAIFmodStudioChannel::GetPan () {
+	return this->mPan;
+}
+
+//----------------------------------------------------------------//
+float MOAIFmodStudioChannel::GetPitch () {
+	return this->mPitch;
 }
 
 //----------------------------------------------------------------//
@@ -221,6 +308,8 @@ float MOAIFmodStudioChannel::GetVolume () {
 //----------------------------------------------------------------//
 MOAIFmodStudioChannel::MOAIFmodStudioChannel () :
 	mChannel ( 0 ),
+	mPitch ( 1.0f ),
+	mPan ( 1.0f ),
 	mVolume ( 1.0f ),
 	mPaused ( false ) ,
 	mLooping ( false ) {
@@ -265,20 +354,30 @@ void MOAIFmodStudioChannel::Play ( MOAIFmodStudioSound* sound, int loopCount ) {
 		this->mChannel->setLoopCount ( loopCount );
 	}
 	
-	this->SetVolume ( this->mVolume );
+    this->SetPan ( this->mPan );
+    this->SetPitch ( this->mPitch );
+    this->SetVolume ( this->mVolume );
 	this->SetPaused ( this->mPaused );
 }
 
 //----------------------------------------------------------------//
 void MOAIFmodStudioChannel::RegisterLuaClass ( MOAILuaState& state ) {
 	
+    MOAINode::RegisterLuaClass ( state );
+    
 	state.SetField ( -1, "ATTR_VOLUME", MOAIFmodStudioChannelAttr::Pack ( ATTR_VOLUME ));
+	state.SetField ( -1, "ATTR_PITCH", MOAIFmodStudioChannelAttr::Pack ( ATTR_PITCH ));
+	state.SetField ( -1, "ATTR_PAN", MOAIFmodStudioChannelAttr::Pack ( ATTR_PAN ));
 }
 
 //----------------------------------------------------------------//
 void MOAIFmodStudioChannel::RegisterLuaFuncs ( MOAILuaState& state ) {
 
+    MOAINode::RegisterLuaFuncs ( state );
+    
 	luaL_Reg regTable [] = {
+		{ "getPan", 		_getPan },
+		{ "getPitch", 		_getPitch },
 		{ "getVolume",		_getVolume },
 		{ "isPlaying",		_isPlaying },
 		{ "moveVolume",		_moveVolume },
@@ -286,6 +385,8 @@ void MOAIFmodStudioChannel::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "seekVolume",		_seekVolume },
 		{ "setPaused",		_setPaused },
 		{ "setLooping",		_setLooping },
+		{ "setPan", 		_setPan },
+		{ "setPitch", 		_setPitch },
 		{ "setVolume",		_setVolume },
 		{ "stop",			_stop },
 		{ NULL, NULL }
@@ -300,6 +401,22 @@ void MOAIFmodStudioChannel::SetPaused ( bool paused ) {
 	this->mPaused = paused;
 	if ( !this->mChannel ) return;
 	this->mChannel->setPaused ( this->mPaused );
+}
+
+//----------------------------------------------------------------//
+void MOAIFmodStudioChannel::SetPan ( float pan ) {
+
+	this->mPan = pan;
+	if ( !this->mChannel ) return;
+	this->mChannel->setPan ( this->mPan );
+}
+
+//----------------------------------------------------------------//
+void MOAIFmodStudioChannel::SetPitch ( float pitch ) {
+
+	this->mPitch = pitch;
+	if ( !this->mChannel ) return;
+	this->mChannel->setPitch ( this->mPitch );
 }
 
 //----------------------------------------------------------------//
