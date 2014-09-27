@@ -58,7 +58,6 @@ public:
 
 	enum {
 		ATTR_VOLUME,
-		ATTR_FREQUENCY,
 		ATTR_PITCH,
 		ATTR_PAN,
 		TOTAL_ATTR,
