@@ -5,14 +5,66 @@
 #include <fmod.h>
 #include <fmod_errors.h>
 
+
+//----------------------------------------------------------------//
 bool MOAIFmodCheckError ( FMOD_RESULT result ) {
     
     if ( result != FMOD_OK ) {
-        ZLLog::Print ( "FMOD Error: %s", FMOD_ErrorString ( result ));
+        ZLLog::Print ( "FMOD Error: %s\n", FMOD_ErrorString ( result ));
         return false;
     }
     return true;
 }
+
+
+//----------------------------------------------------------------//
+FMOD_RESULT fmodFileOpen ( const char *name, unsigned int *filesize, void **handle, void *userdata ) {
+    
+    ZLFileStream* stream = new ZLFileStream ();
+    *handle = ( void* ) stream;
+    
+    if ( !stream->OpenRead ( name )) {
+        *filesize = 0;
+        return FMOD_ERR_FILE_NOTFOUND;
+    }
+    *filesize = stream->GetLength ();
+    
+    return FMOD_OK;
+}
+
+//----------------------------------------------------------------//
+FMOD_RESULT fmodFileClose ( void *handle, void *userdata ) {
+    
+    ZLFileStream* stream = ( ZLFileStream* ) handle;
+    stream->Close ();
+    delete stream;
+    
+    return FMOD_OK;
+}
+
+//----------------------------------------------------------------//
+FMOD_RESULT fmodFileRead ( void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata ) {
+    
+    ZLFileStream* stream = ( ZLFileStream* ) handle;
+    *bytesread = stream->ReadBytes ( buffer, sizebytes );
+    if ( *bytesread == 0 ) {
+
+        return FMOD_ERR_FILE_EOF;
+    }
+    return FMOD_OK;
+}
+
+//----------------------------------------------------------------//
+FMOD_RESULT fmodFileSeek ( void *handle, unsigned int pos, void *userdata ) {
+    
+    ZLFileStream* stream = ( ZLFileStream* ) handle;
+    if ( stream->Seek ( pos, SEEK_SET ) ) {
+        
+        return FMOD_ERR_FILE_COULDNOTSEEK;
+    }
+    return FMOD_OK;
+}
+
 
 //================================================================//
 // local
@@ -194,7 +246,7 @@ MOAIFmodStudio::MOAIFmodStudio () :
     mMainChannelGroup ( 0 ),
     mBGMChannelGroup ( 0 ),
     mSFXChannelGroup ( 0 ) {
-
+    
 }
 
 //----------------------------------------------------------------//
@@ -225,7 +277,7 @@ void MOAIFmodStudio::OpenSoundSystem ( u32 channels ) {
 
 	result = FMOD_System_Init ( this->mSoundSys, channels, FMOD_INIT_NORMAL, 0 );
 	if ( !MOAIFmodCheckError ( result ) ) return;
-	
+    
 	result =  FMOD_System_GetMasterChannelGroup ( this->mSoundSys, &this->mMainChannelGroup );
 	if ( !MOAIFmodCheckError ( result ) ) return;
 
@@ -233,6 +285,9 @@ void MOAIFmodStudio::OpenSoundSystem ( u32 channels ) {
     MOAIFmodCheckError ( result );
     
     result = FMOD_System_CreateChannelGroup ( this->mSoundSys, "music", &this->mBGMChannelGroup );
+    MOAIFmodCheckError ( result );
+    
+    result = FMOD_System_SetFileSystem ( this->mSoundSys, &fmodFileOpen, &fmodFileClose, &fmodFileRead, &fmodFileSeek, 0, 0, -1 );
     MOAIFmodCheckError ( result );
 }
 

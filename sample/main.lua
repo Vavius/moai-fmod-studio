@@ -14,11 +14,14 @@ layer = MOAILayer2D.new ()
 layer:setViewport ( viewport )
 MOAISim.pushRenderPass ( layer )
 
+MOAIFileSystem.mountVirtualDirectory ( 'test', 'virtual.zip' )
+MOAIFileSystem.checkFileExists ( 'test/virtual/mono16.wav' )
+
 MOAIFmodStudio.init()
 channel = MOAIFmodStudioChannel.new()
 
 sound = MOAIFmodStudioSound.new()
-sound:loadSFX('mono16.wav')
+sound:loadSFX('test/virtual/mono16.wav')
 
 channel:setLooping(true)
 channel:play(sound)
