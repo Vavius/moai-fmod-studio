@@ -7,6 +7,8 @@
 #include <moai-core/headers.h>
 #include <fmod.h>
 
+bool MOAIFmodCheckError ( FMOD_RESULT result );
+
 
 //================================================================//
 // MOAIFmodStudio

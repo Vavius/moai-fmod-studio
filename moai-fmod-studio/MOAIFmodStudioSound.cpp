@@ -187,7 +187,7 @@ void MOAIFmodStudioSound::Load ( MOAIDataBuffer& data, bool streaming ) {
 	
 	data.Unlock ();
 	
-	if ( result != FMOD_OK ) return;
+	if ( MOAIFmodCheckError ( result )) return;
 	
 	this->mSound = sound;
 }
@@ -227,9 +227,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 		result = FMOD_System_CreateSound ( soundSys, filename, mode, &info, &sound );
 	}
 	
-	if ( result != FMOD_OK ) {
-		return;
-	}
+	if ( !MOAIFmodCheckError ( result )) return;
     
 	this->mSound = sound;
 }
@@ -240,7 +238,8 @@ void MOAIFmodStudioSound::Release () {
 	if ( !this->mSound ) return;
 	
 	if ( MOAIFmodStudio::IsValid ()) {
-	   FMOD_Sound_Release ( this->mSound );
+        FMOD_RESULT result = FMOD_Sound_Release ( this->mSound );
+        MOAIFmodCheckError ( result );
 	}
 	this->mSound = 0;
 }

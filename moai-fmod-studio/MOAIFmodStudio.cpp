@@ -5,6 +5,14 @@
 #include <fmod.h>
 #include <fmod_errors.h>
 
+bool MOAIFmodCheckError ( FMOD_RESULT result ) {
+    
+    if ( result != FMOD_OK ) {
+        ZLLog::Print ( "FMOD Error: %s", FMOD_ErrorString ( result ));
+        return false;
+    }
+    return true;
+}
 
 //================================================================//
 // local
@@ -163,7 +171,7 @@ void MOAIFmodStudio::CloseSoundSystem () {
 
 	if ( !this->mSoundSys ) return;
 	
-	FMOD_System_Close ( this->mSoundSys );
+    FMOD_System_Close ( this->mSoundSys );
 	FMOD_System_Release ( this->mSoundSys );
 	this->mSoundSys = 0;
 }
@@ -173,7 +181,8 @@ float MOAIFmodStudio::GetVolume ( FMOD_CHANNELGROUP* group ) {
     
     if ( group ) {
         float volume;
-        FMOD_ChannelGroup_GetVolume ( group, &volume );
+        FMOD_RESULT result = FMOD_ChannelGroup_GetVolume ( group, &volume );
+        MOAIFmodCheckError ( result );
         return volume;
     }
     return 0;
@@ -198,7 +207,8 @@ MOAIFmodStudio::~MOAIFmodStudio () {
 void MOAIFmodStudio::MuteChannels ( bool mute, FMOD_CHANNELGROUP* group ) {
 
 	if ( group ) {
-		FMOD_ChannelGroup_SetMute ( group, mute );
+		FMOD_RESULT result = FMOD_ChannelGroup_SetMute ( group, mute );
+        MOAIFmodCheckError ( result );
 	}
 }
 
@@ -211,17 +221,19 @@ void MOAIFmodStudio::OpenSoundSystem ( u32 channels ) {
 	//FMOD::Debug_SetLevel(FMOD_DEBUG_LEVEL_ERROR);
 
 	result = FMOD_System_Create ( &this->mSoundSys ); // Create the main system object.
-	if ( result != FMOD_OK ) return;
+	if ( !MOAIFmodCheckError ( result ) ) return;
 
 	result = FMOD_System_Init ( this->mSoundSys, channels, FMOD_INIT_NORMAL, 0 );
-
-	if ( result != FMOD_OK ) return;
+	if ( !MOAIFmodCheckError ( result ) ) return;
 	
 	result =  FMOD_System_GetMasterChannelGroup ( this->mSoundSys, &this->mMainChannelGroup );
-	if ( result != FMOD_OK ) return;
+	if ( !MOAIFmodCheckError ( result ) ) return;
 
     result = FMOD_System_CreateChannelGroup ( this->mSoundSys, "effects", &this->mSFXChannelGroup );
+    MOAIFmodCheckError ( result );
+    
     result = FMOD_System_CreateChannelGroup ( this->mSoundSys, "music", &this->mBGMChannelGroup );
+    MOAIFmodCheckError ( result );
 }
 
 //----------------------------------------------------------------//
@@ -254,7 +266,8 @@ void MOAIFmodStudio::RegisterLuaFuncs ( MOAILuaState& state ) {
 void MOAIFmodStudio::Resume () {
     
     if ( this->mSoundSys ) {
-        FMOD_System_MixerResume ( this->mSoundSys );
+        FMOD_RESULT result = FMOD_System_MixerResume ( this->mSoundSys );
+        MOAIFmodCheckError ( result );
     }
 }
 
@@ -262,7 +275,8 @@ void MOAIFmodStudio::Resume () {
 void MOAIFmodStudio::SetVolume ( float volume, FMOD_CHANNELGROUP* group ) {
     
     if ( group ) {
-        FMOD_ChannelGroup_SetVolume ( group, volume );
+        FMOD_RESULT result = FMOD_ChannelGroup_SetVolume ( group, volume );
+        MOAIFmodCheckError ( result );
     }
 }
 
@@ -270,7 +284,8 @@ void MOAIFmodStudio::SetVolume ( float volume, FMOD_CHANNELGROUP* group ) {
 void MOAIFmodStudio::Suspend () {
     
     if ( this->mSoundSys ) {
-        FMOD_System_MixerSuspend ( this->mSoundSys );
+        FMOD_RESULT result = FMOD_System_MixerSuspend ( this->mSoundSys );
+        MOAIFmodCheckError ( result );
     }
 }
 
@@ -278,7 +293,8 @@ void MOAIFmodStudio::Suspend () {
 void MOAIFmodStudio::Update () {
 
 	if ( this->mSoundSys ) {
-		FMOD_System_Update ( this->mSoundSys );
+		FMOD_RESULT result = FMOD_System_Update ( this->mSoundSys );
+        MOAIFmodCheckError ( result );
 	}
 }
 
