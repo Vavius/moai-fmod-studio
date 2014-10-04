@@ -19,7 +19,7 @@ class MOAIFmodStudioChannel :
 private:
 
 	MOAISharedPtr < MOAIFmodStudioSound > mSound;
-	FMOD::Channel* mChannel;
+	FMOD_CHANNEL* mChannel;
 	
 	typedef enum {
 		STOPPED = 0,

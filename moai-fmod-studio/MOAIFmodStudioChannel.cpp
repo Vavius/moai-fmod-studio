@@ -331,27 +331,27 @@ void MOAIFmodStudioChannel::Play ( MOAIFmodStudioSound* sound, int loopCount ) {
 	if ( !sound ) return;
 	if ( !sound->mSound ) return;
 	
-	FMOD::System* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
+	FMOD_SYSTEM* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
 	if ( !soundSys ) return;
 	
 	FMOD_RESULT result;
-	FMOD::Channel* channel = 0;
+	FMOD_CHANNEL* channel = 0;
 	
 	//printf ( "PLAY SOUND %s, @ %f\n", sound->GetFileName (), ZLDeviceTime::GetTimeInSeconds () );
-	result = soundSys->playSound ( sound->mSound, 0, true, &channel );
+	result = FMOD_System_PlaySound(soundSys, sound->mSound, 0, true, &channel );
 	if ( result != FMOD_OK ) {
 		printf (" FMOD ERROR: Sound did not play\n" );
 		return;
 	}
 	
 	this->mChannel = channel;
-	this->mChannel->setMode ( FMOD_LOOP_NORMAL );
-
+	FMOD_Channel_SetMode(this->mChannel,FMOD_LOOP_NORMAL );
+	
 	if ( mLooping ) {
-		this->mChannel->setLoopCount ( -1 );
+		FMOD_Channel_SetLoopCount(this->mChannel, -1 );
 	}
 	else {
-		this->mChannel->setLoopCount ( loopCount );
+		FMOD_Channel_SetLoopCount(this->mChannel, loopCount );
 	}
 	
     this->SetPan ( this->mPan );
@@ -400,7 +400,8 @@ void MOAIFmodStudioChannel::SetPaused ( bool paused ) {
 
 	this->mPaused = paused;
 	if ( !this->mChannel ) return;
-	this->mChannel->setPaused ( this->mPaused );
+	FMOD_Channel_SetPaused(this->mChannel, this->mPaused);
+	
 }
 
 //----------------------------------------------------------------//
@@ -408,7 +409,7 @@ void MOAIFmodStudioChannel::SetPan ( float pan ) {
 
 	this->mPan = pan;
 	if ( !this->mChannel ) return;
-	this->mChannel->setPan ( this->mPan );
+	FMOD_Channel_SetPan(this->mChannel, this->mPan);
 }
 
 //----------------------------------------------------------------//
@@ -416,7 +417,7 @@ void MOAIFmodStudioChannel::SetPitch ( float pitch ) {
 
 	this->mPitch = pitch;
 	if ( !this->mChannel ) return;
-	this->mChannel->setPitch ( this->mPitch );
+	FMOD_Channel_SetPitch(this->mChannel, this->mPitch);
 }
 
 //----------------------------------------------------------------//
@@ -424,12 +425,11 @@ void MOAIFmodStudioChannel::SetVolume ( float volume ) {
 
 	this->mVolume = volume;
 	if ( !this->mChannel ) return;
-	this->mChannel->setVolume ( this->mVolume );
+	FMOD_Channel_SetVolume(this->mChannel, this->mVolume);
 }
 
 //----------------------------------------------------------------//
 void MOAIFmodStudioChannel::Stop () {
-
 	if ( !this->mChannel ) return;
-	this->mChannel->stop();
+	FMOD_Channel_Stop(this->mChannel);
 }

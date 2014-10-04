@@ -19,7 +19,7 @@ class MOAIFmodStudioSound :
 	public virtual MOAILuaObject {
 private:
 
-	FMOD::Sound* mSound;
+	FMOD_SOUND* mSound;
 	int mLoopCount;
 	char mFileName[128];
 
