@@ -4,11 +4,11 @@
 #include <moai-fmod-studio/MOAIFmodStudio.h>
 #include <moai-fmod-studio/MOAIFmodStudioSound.h>
 #include <fmod.h>
+#include <fmod_errors.h>
 
 #ifdef MOAI_OS_IPHONE
-	#include <fmodiphone.h>
+	#include <fmod_ios.h>
 #endif
-
 
 //================================================================//
 // local
@@ -52,6 +52,7 @@ int MOAIFmodStudioSound::_load ( lua_State* L ) {
 			self->Load( *data, streaming );
 		}
 	}
+    self->mType = TYPE_UNSET;
 	return 0;
 }
 
@@ -86,6 +87,7 @@ int	MOAIFmodStudioSound::_loadBGM ( lua_State* L ) {
 			self->Load( *data, true );
 		}
 	}
+    self->mType = TYPE_BGM;
 	return 0;
 }
 
@@ -118,6 +120,7 @@ int	MOAIFmodStudioSound::_loadSFX ( lua_State* L ) {
 			self->Load( *data, false );
 		}
 	}
+    self->mType = TYPE_SFX;
 	return 0;
 }
 
@@ -143,7 +146,8 @@ int MOAIFmodStudioSound::_release ( lua_State* L ) {
 //----------------------------------------------------------------//
 MOAIFmodStudioSound::MOAIFmodStudioSound () :
 	mSound ( 0 ),
-	mLoopCount ( 0 ) {
+	mLoopCount ( 0 ),
+	mType ( TYPE_UNSET ) {
 
 	RTTI_SINGLE ( MOAILuaObject )
 
@@ -217,7 +221,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 	#endif
 
 	if ( streaming ) {
-		result = FMOD_System_CreateStream (soundSys, filename, mode, &info, &sound );
+		result = FMOD_System_CreateStream ( soundSys, filename, mode, &info, &sound );
 	}
 	else {
 		result = FMOD_System_CreateSound ( soundSys, filename, mode, &info, &sound );

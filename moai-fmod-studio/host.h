@@ -14,5 +14,7 @@ AKU_API void	MOAIFmodStudioAppInitialize				();
 AKU_API void	MOAIFmodStudioContextInitialize			();
 
 AKU_API void	MOAIFmodStudioUpdate					();
+AKU_API void    MOAIFmodStudioPause                     ();
+AKU_API void    MOAIFmodStudioResume                    ();
 
 #endif

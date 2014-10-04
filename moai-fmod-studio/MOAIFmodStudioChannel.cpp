@@ -5,6 +5,7 @@
 #include <moai-fmod-studio/MOAIFmodStudioChannel.h>
 #include <moai-fmod-studio/MOAIFmodStudioSound.h>
 #include <fmod.hpp>
+#include <fmod_errors.h>
 
 //================================================================//
 // local
@@ -192,6 +193,23 @@ int MOAIFmodStudioChannel::_setPitch ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+/**	@name	setReuse
+    @text	If set to true then channel won't stop previous playing sound and
+            will use a new fmod channel every time play is called.
+
+    @in		MOAIFmodStudioChannel self
+    @out	nil
+*/
+int MOAIFmodStudioChannel::_setReusable ( lua_State *L ) {
+    MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "UB" )
+    
+    bool reuse = state.GetValue < bool >( 2, true );
+    self->mReusable = reuse;
+    
+    return 0;
+}
+
+//----------------------------------------------------------------//
 /**	@name	setVolume
 	@text	Immediately sets the volume of this channel.
 
@@ -309,10 +327,11 @@ float MOAIFmodStudioChannel::GetVolume () {
 MOAIFmodStudioChannel::MOAIFmodStudioChannel () :
 	mChannel ( 0 ),
 	mPitch ( 1.0f ),
-	mPan ( 1.0f ),
+	mPan ( 0.0f ),
 	mVolume ( 1.0f ),
 	mPaused ( false ) ,
-	mLooping ( false ) {
+	mLooping ( false ),
+	mReusable ( false ) {
 	
 	RTTI_SINGLE ( MOAINode )
 }
@@ -326,26 +345,46 @@ MOAIFmodStudioChannel::~MOAIFmodStudioChannel () {
 //----------------------------------------------------------------//
 void MOAIFmodStudioChannel::Play ( MOAIFmodStudioSound* sound, int loopCount ) {
 
-	this->Stop ();
+	if ( !this->mReusable ) {
+        this->Stop ();
+    }
+
 	this->mSound = sound;
 	if ( !sound ) return;
 	if ( !sound->mSound ) return;
 	
-	FMOD_SYSTEM* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
+	MOAIFmodStudio& system = MOAIFmodStudio::Get ();
+    
+	FMOD_CHANNELGROUP* group = 0;
+	switch ( sound->GetType ()) {
+        case MOAIFmodStudioSound::TYPE_BGM:
+            group = system.GetBGMChannelGroup ();
+            break;
+            
+        case MOAIFmodStudioSound::TYPE_SFX:
+            group = system.GetSFXChannelGroup ();
+            break;
+            
+        default:
+            group = system.GetMainChannelGroup ();
+            break;
+    }
+    
+    FMOD_SYSTEM* soundSys = system.GetSoundSys ();
 	if ( !soundSys ) return;
 	
 	FMOD_RESULT result;
 	FMOD_CHANNEL* channel = 0;
-	
-	result = FMOD_System_PlaySound(soundSys, sound->mSound, 0, true, &channel );
+    
+    result = FMOD_System_PlaySound ( soundSys, sound->mSound, group, true, &channel );
 	if ( result != FMOD_OK ) {
-		printf ("FMOD ERROR: Sound did not play\n" );
+		ZLLog::Print ( "FMOD Error: %s \n", FMOD_ErrorString ( result ));
 		return;
 	}
 	
 	this->mChannel = channel;
 	FMOD_Channel_SetMode ( this->mChannel, FMOD_LOOP_NORMAL );
-	
+
 	if ( mLooping ) {
 		FMOD_Channel_SetLoopCount ( this->mChannel, -1 );
 	}
@@ -386,6 +425,7 @@ void MOAIFmodStudioChannel::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setLooping",		_setLooping },
 		{ "setPan", 		_setPan },
 		{ "setPitch", 		_setPitch },
+        { "setReusable",    _setReusable },
 		{ "setVolume",		_setVolume },
 		{ "stop",			_stop },
 		{ NULL, NULL }

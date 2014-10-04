@@ -21,7 +21,9 @@ project ( moai-fmod-studio )
   endif()
 
   
-
+  if (BUILD_IOS)
+    set (FMOD_LIB "${FMOD_LIB_ROOT}/ios/libfmod_iphoneos.a")
+  endif (BUILD_IOS)
   
 
   set ( MOAI_FMOD_INCLUDES 

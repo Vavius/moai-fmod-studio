@@ -21,6 +21,7 @@ private:
 
 	FMOD_SOUND* mSound;
 	int mLoopCount;
+    u32 mType;
 	char mFileName[128];
 
 	//----------------------------------------------------------------//
@@ -30,6 +31,14 @@ private:
 	static int	_release			( lua_State* L );
 
 public:
+
+    GET ( u32, Type, mType )
+        
+    enum {
+        TYPE_UNSET,
+        TYPE_BGM,
+        TYPE_SFX,
+    };
 
 	friend class MOAIFmodStudioChannel;
 	friend class MOAIFmodStudio;

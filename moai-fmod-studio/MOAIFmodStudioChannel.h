@@ -32,6 +32,7 @@ private:
 	float	mVolume;
 	bool	mPaused;
 	bool	mLooping;
+    bool    mReusable;
 	PlayState mPlayState;
 
 	//----------------------------------------------------------------//
@@ -42,11 +43,12 @@ private:
 	static int	_moveVolume			( lua_State* L );
 	static int	_play				( lua_State* L );
 	static int	_seekVolume			( lua_State* L );
-	static int	_setPaused			( lua_State* L );
-	static int	_setPan				( lua_State* L );
-	static int	_setPitch			( lua_State* L );
-	static int	_setVolume			( lua_State* L );
 	static int  _setLooping			( lua_State* L );
+	static int	_setPan				( lua_State* L );
+	static int	_setPaused			( lua_State* L );
+	static int	_setPitch			( lua_State* L );
+	static int  _setReusable		( lua_State* L );
+	static int	_setVolume			( lua_State* L );
 	static int	_stop				( lua_State* L );
 
 public:
