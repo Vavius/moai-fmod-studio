@@ -172,14 +172,14 @@ void MOAIFmodStudioSound::Load ( MOAIDataBuffer& data, bool streaming ) {
 	mode |= streaming ? FMOD_CREATESTREAM : FMOD_DEFAULT;
 
 	FMOD_CREATESOUNDEXINFO info;
-	memset( &info, 0, sizeof( FMOD_CREATESOUNDEXINFO ) );
-	info.cbsize = sizeof( FMOD_CREATESOUNDEXINFO );
+	memset ( &info, 0, sizeof ( FMOD_CREATESOUNDEXINFO ));
+	info.cbsize = sizeof ( FMOD_CREATESOUNDEXINFO );
 	info.length = size;
 
 	FMOD_RESULT result;
 	FMOD_SOUND* sound = 0;
 
-	result = FMOD_System_CreateSound( soundSys, ( cc8* )bytes, mode, &info, &sound );
+	result = FMOD_System_CreateSound ( soundSys, ( cc8* )bytes, mode, &info, &sound );
 	
 	data.Unlock ();
 	
@@ -207,7 +207,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 	FMOD_RESULT result;
 	FMOD_SOUND* sound = 0;
 	FMOD_CREATESOUNDEXINFO info;
-	memset ( &info, 0, sizeof( FMOD_CREATESOUNDEXINFO ));
+	memset ( &info, 0, sizeof ( FMOD_CREATESOUNDEXINFO ));
 	
 	info.cbsize = sizeof ( FMOD_CREATESOUNDEXINFO );
 	
@@ -220,7 +220,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 		result = FMOD_System_CreateStream (soundSys, filename, mode, &info, &sound );
 	}
 	else {
-		result = FMOD_System_CreateSound( soundSys, filename, mode, &info, &sound );
+		result = FMOD_System_CreateSound ( soundSys, filename, mode, &info, &sound );
 	}
 	
 	if ( result != FMOD_OK ) {
@@ -236,7 +236,7 @@ void MOAIFmodStudioSound::Release () {
 	if ( !this->mSound ) return;
 	
 	if ( MOAIFmodStudio::IsValid ()) {
-	   FMOD_Sound_Release(this->mSound);
+	   FMOD_Sound_Release ( this->mSound );
 	}
 	this->mSound = 0;
 }

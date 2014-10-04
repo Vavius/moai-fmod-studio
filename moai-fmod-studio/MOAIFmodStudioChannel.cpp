@@ -337,21 +337,20 @@ void MOAIFmodStudioChannel::Play ( MOAIFmodStudioSound* sound, int loopCount ) {
 	FMOD_RESULT result;
 	FMOD_CHANNEL* channel = 0;
 	
-	//printf ( "PLAY SOUND %s, @ %f\n", sound->GetFileName (), ZLDeviceTime::GetTimeInSeconds () );
 	result = FMOD_System_PlaySound(soundSys, sound->mSound, 0, true, &channel );
 	if ( result != FMOD_OK ) {
-		printf (" FMOD ERROR: Sound did not play\n" );
+		printf ("FMOD ERROR: Sound did not play\n" );
 		return;
 	}
 	
 	this->mChannel = channel;
-	FMOD_Channel_SetMode(this->mChannel,FMOD_LOOP_NORMAL );
+	FMOD_Channel_SetMode ( this->mChannel, FMOD_LOOP_NORMAL );
 	
 	if ( mLooping ) {
-		FMOD_Channel_SetLoopCount(this->mChannel, -1 );
+		FMOD_Channel_SetLoopCount ( this->mChannel, -1 );
 	}
 	else {
-		FMOD_Channel_SetLoopCount(this->mChannel, loopCount );
+		FMOD_Channel_SetLoopCount ( this->mChannel, loopCount );
 	}
 	
     this->SetPan ( this->mPan );
@@ -400,7 +399,7 @@ void MOAIFmodStudioChannel::SetPaused ( bool paused ) {
 
 	this->mPaused = paused;
 	if ( !this->mChannel ) return;
-	FMOD_Channel_SetPaused(this->mChannel, this->mPaused);
+	FMOD_Channel_SetPaused ( this->mChannel, this->mPaused );
 	
 }
 
@@ -409,7 +408,7 @@ void MOAIFmodStudioChannel::SetPan ( float pan ) {
 
 	this->mPan = pan;
 	if ( !this->mChannel ) return;
-	FMOD_Channel_SetPan(this->mChannel, this->mPan);
+	FMOD_Channel_SetPan ( this->mChannel, this->mPan );
 }
 
 //----------------------------------------------------------------//
@@ -417,7 +416,7 @@ void MOAIFmodStudioChannel::SetPitch ( float pitch ) {
 
 	this->mPitch = pitch;
 	if ( !this->mChannel ) return;
-	FMOD_Channel_SetPitch(this->mChannel, this->mPitch);
+	FMOD_Channel_SetPitch ( this->mChannel, this->mPitch );
 }
 
 //----------------------------------------------------------------//
@@ -425,11 +424,11 @@ void MOAIFmodStudioChannel::SetVolume ( float volume ) {
 
 	this->mVolume = volume;
 	if ( !this->mChannel ) return;
-	FMOD_Channel_SetVolume(this->mChannel, this->mVolume);
+	FMOD_Channel_SetVolume ( this->mChannel, this->mVolume );
 }
 
 //----------------------------------------------------------------//
 void MOAIFmodStudioChannel::Stop () {
 	if ( !this->mChannel ) return;
-	FMOD_Channel_Stop(this->mChannel);
+	FMOD_Channel_Stop ( this->mChannel );
 }
