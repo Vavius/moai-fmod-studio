@@ -5,13 +5,8 @@
 #define	MOAIFMODSTUDIO_H
 
 #include <moai-core/headers.h>
+#include <fmod.h>
 
-namespace FMOD {
-	class System;
-	class Sound;
-	class Channel;
-	class ChannelGroup;
-};
 
 //================================================================//
 // MOAIFmodStudio
@@ -23,8 +18,8 @@ class MOAIFmodStudio :
 	public MOAIGlobalClass < MOAIFmodStudio, MOAILuaObject > {
 private:
 
-	FMOD::System* mSoundSys;
-	FMOD::ChannelGroup* mMainChannelGroup;
+	FMOD_SYSTEM * mSoundSys;
+	FMOD_CHANNELGROUP* mMainChannelGroup;
 
 	//----------------------------------------------------------------//
 	static int	_getMemoryStats		( lua_State* L );
@@ -35,8 +30,8 @@ public:
 
 	DECL_LUA_SINGLETON ( MOAIFmodStudio )
 
-	GET ( FMOD::System*, SoundSys, mSoundSys );
-	GET ( FMOD::ChannelGroup*, MainChannelGroup, mMainChannelGroup);
+	GET ( FMOD_SYSTEM*, SoundSys, mSoundSys );
+	GET ( FMOD_CHANNELGROUP*, MainChannelGroup, mMainChannelGroup);
 
 	//----------------------------------------------------------------//
 	void			CloseSoundSystem	();

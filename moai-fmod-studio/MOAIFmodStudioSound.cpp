@@ -3,7 +3,7 @@
 
 #include <moai-fmod-studio/MOAIFmodStudio.h>
 #include <moai-fmod-studio/MOAIFmodStudioSound.h>
-#include <fmod.hpp>
+#include <fmod.h>
 
 #ifdef MOAI_OS_IPHONE
 	#include <fmodiphone.h>
@@ -161,7 +161,7 @@ void MOAIFmodStudioSound::Load ( MOAIDataBuffer& data, bool streaming ) {
 
 	if ( this->mSound ) return;
 	
-	FMOD::System* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
+	FMOD_SYSTEM* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
 	if ( !soundSys ) return;
 	
 	void* bytes;
@@ -177,9 +177,9 @@ void MOAIFmodStudioSound::Load ( MOAIDataBuffer& data, bool streaming ) {
 	info.length = size;
 
 	FMOD_RESULT result;
-	FMOD::Sound* sound = 0;
+	FMOD_SOUND* sound = 0;
 
-	result = soundSys->createSound (( cc8* )bytes, mode, &info, &sound );
+	result = FMOD_System_CreateSound( soundSys, ( cc8* )bytes, mode, &info, &sound );
 	
 	data.Unlock ();
 	
@@ -194,7 +194,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 	async = false;
 	if ( this->mSound ) return;
 	
-	FMOD::System* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
+	FMOD_SYSTEM* soundSys = MOAIFmodStudio::Get ().GetSoundSys ();
 	if ( !soundSys ) return;
 	
 	FMOD_MODE mode = 0;
@@ -205,7 +205,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 	mode |= async ? FMOD_NONBLOCKING : 0;
 	
 	FMOD_RESULT result;
-	FMOD::Sound* sound = 0;
+	FMOD_SOUND* sound = 0;
 	FMOD_CREATESOUNDEXINFO info;
 	memset ( &info, 0, sizeof( FMOD_CREATESOUNDEXINFO ));
 	
@@ -217,10 +217,10 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 	#endif
 
 	if ( streaming ) {
-		result = soundSys->createStream ( filename, mode, &info, &sound );
+		result = FMOD_System_CreateStream (soundSys, filename, mode, &info, &sound );
 	}
 	else {
-		result = soundSys->createSound ( filename, mode, &info, &sound );
+		result = FMOD_System_CreateSound( soundSys, filename, mode, &info, &sound );
 	}
 	
 	if ( result != FMOD_OK ) {
@@ -236,7 +236,7 @@ void MOAIFmodStudioSound::Release () {
 	if ( !this->mSound ) return;
 	
 	if ( MOAIFmodStudio::IsValid ()) {
-		this->mSound->release ();
+	   FMOD_Sound_Release(this->mSound);
 	}
 	this->mSound = 0;
 }

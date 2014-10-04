@@ -2,7 +2,7 @@
 // http://getmoai.com
 
 #include <moai-fmod-studio/MOAIFmodStudio.h>
-#include <fmod.hpp>
+#include <fmod.h>
 
 
 //================================================================//
@@ -65,8 +65,8 @@ void MOAIFmodStudio::CloseSoundSystem () {
 
 	if ( !this->mSoundSys ) return;
 	
-	this->mSoundSys->close ();
-	this->mSoundSys->release ();
+	FMOD_System_Close(this->mSoundSys);
+	FMOD_System_Release(this->mSoundSys);
 	this->mSoundSys = 0;
 }
 
@@ -84,7 +84,7 @@ MOAIFmodStudio::~MOAIFmodStudio () {
 //----------------------------------------------------------------//
 void MOAIFmodStudio::MuteChannels ( bool mute ) {
 
-	this->mMainChannelGroup->setMute ( mute );
+	FMOD_ChannelGroup_SetMute(this->mMainChannelGroup, mute);
 }
 
 //----------------------------------------------------------------//
@@ -95,14 +95,14 @@ void MOAIFmodStudio::OpenSoundSystem () {
 	//FMOD::Debug_SetLevel(FMOD_DEBUG_ALL);
 	//FMOD::Debug_SetLevel(FMOD_DEBUG_LEVEL_ERROR);
 
-	result = FMOD::System_Create ( &this->mSoundSys ); // Create the main system object.
+	result = FMOD_System_Create ( &this->mSoundSys ); // Create the main system object.
 	if ( result != FMOD_OK ) return;
 
-	result = this->mSoundSys->init ( 100, FMOD_INIT_NORMAL, 0 );
+	result =  FMOD_System_Init(this->mSoundSys, 100, FMOD_INIT_NORMAL, 0 );
 
 	if ( result != FMOD_OK ) return;
 	
-	result = this->mSoundSys->getMasterChannelGroup ( &this->mMainChannelGroup );
+	result =  FMOD_System_GetMasterChannelGroup(this->mSoundSys, &this->mMainChannelGroup );
 	if ( result != FMOD_OK ) return;
 }
 
@@ -128,7 +128,8 @@ void MOAIFmodStudio::RegisterLuaFuncs ( MOAILuaState& state ) {
 void MOAIFmodStudio::Update () {
 
 	if ( this->mSoundSys ) {
-		this->mSoundSys->update ();
+		FMOD_System_Update(this->mSoundSys);
+		
 	}
 }
 
