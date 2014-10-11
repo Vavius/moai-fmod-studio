@@ -53,7 +53,7 @@ public:
 	void		Load					( cc8* filename, bool streaming, bool async );
 	void		RegisterLuaClass		( MOAILuaState& state );
 	void		RegisterLuaFuncs		( MOAILuaState& state );
-	void		Release					();			
+	void		ReleaseSound			();			
 	STLString	ToString				();
 };
 

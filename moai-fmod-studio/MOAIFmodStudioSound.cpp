@@ -134,7 +134,7 @@ int	MOAIFmodStudioSound::_loadSFX ( lua_State* L ) {
 int MOAIFmodStudioSound::_release ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIFmodStudioSound, "U" )
 
-	self->Release ();
+	self->ReleaseSound ();
 
 	return 0;
 }
@@ -157,7 +157,7 @@ MOAIFmodStudioSound::MOAIFmodStudioSound () :
 //----------------------------------------------------------------//
 MOAIFmodStudioSound::~MOAIFmodStudioSound () {
 
-	this->Release ();
+	this->ReleaseSound ();
 }
 
 //----------------------------------------------------------------//
@@ -233,7 +233,7 @@ void MOAIFmodStudioSound::Load ( cc8* filename, bool streaming, bool async ) {
 }
 
 //----------------------------------------------------------------//
-void MOAIFmodStudioSound::Release () {
+void MOAIFmodStudioSound::ReleaseSound () {
 
 	if ( !this->mSound ) return;
 	
