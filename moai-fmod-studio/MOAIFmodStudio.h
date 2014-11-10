@@ -36,7 +36,8 @@ private:
 	static int  _muteSFX				( lua_State* L );
 	static int  _setVolume				( lua_State* L );
 	static int  _setBGMVolume			( lua_State* L );
-	static int  _setSFXVolume			( lua_State* L );
+    static int  _setLogEnabled          ( lua_State* L );
+    static int  _setSFXVolume			( lua_State* L );
 
 public:
 

@@ -58,22 +58,19 @@ int MOAIFmodStudioChannel::_getVolume ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 /**	@name	isPlaying
- @text	Returns true if channel is playing.
+    @text	Returns true if channel is playing.
  
- @in	MOAIFmodStudioChannel self
- @out	boolean
+    @in     MOAIFmodStudioChannel self
+    @out	boolean
  */
 int MOAIFmodStudioChannel::_isPlaying ( lua_State* L ) {
 	
 	MOAI_LUA_SETUP ( MOAIFmodStudioChannel, "U" )
 	
-	bool isPlaying = self->mPlayState == PLAYING;
-
-	if ( self->mSound ) {
-		state.Push ( state, isPlaying );
-		return 1; 
-	}
-	return 0;
+	bool isPlaying = self->IsPlaying ();
+    
+    state.Push ( isPlaying );
+    return 1;
 }
 
 //----------------------------------------------------------------//
@@ -324,6 +321,20 @@ float MOAIFmodStudioChannel::GetVolume () {
 }
 
 //----------------------------------------------------------------//
+bool MOAIFmodStudioChannel::IsPlaying () {
+    
+    if ( this->mChannel ) {
+        
+        FMOD_BOOL playing = false;
+        FMOD_RESULT result = FMOD_Channel_IsPlaying ( this->mChannel, &playing );
+        if ( MOAIFmodCheckError ( result )) {
+            return ( bool ) playing;
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------//
 MOAIFmodStudioChannel::MOAIFmodStudioChannel () :
 	mChannel ( 0 ),
 	mPitch ( 1.0f ),
@@ -475,5 +486,7 @@ void MOAIFmodStudioChannel::SetVolume ( float volume ) {
 void MOAIFmodStudioChannel::Stop () {
 	if ( !this->mChannel ) return;
 	FMOD_RESULT result = FMOD_Channel_Stop ( this->mChannel );
+    this->mChannel = 0;
     MOAIFmodCheckError ( result );
 }
+

@@ -5,12 +5,15 @@
 #include <fmod.h>
 #include <fmod_errors.h>
 
+static bool logEnabled = false;
 
 //----------------------------------------------------------------//
 bool MOAIFmodCheckError ( FMOD_RESULT result ) {
     
     if ( result != FMOD_OK ) {
-        ZLLog::Print ( "FMOD Error: %s\n", FMOD_ErrorString ( result ));
+        if ( logEnabled ) {
+            ZLLog::Print ( "FMOD Error: %s\n", FMOD_ErrorString ( result ));
+        }
         return false;
     }
     return true;
@@ -18,7 +21,7 @@ bool MOAIFmodCheckError ( FMOD_RESULT result ) {
 
 
 //----------------------------------------------------------------//
-FMOD_RESULT fmodFileOpen ( const char *name, unsigned int *filesize, void **handle, void *userdata ) {
+FMOD_RESULT F_CALLBACK fmodFileOpen ( const char *name, unsigned int *filesize, void **handle, void *userdata ) {
     
     ZLFileStream* stream = new ZLFileStream ();
     *handle = ( void* ) stream;
@@ -33,7 +36,7 @@ FMOD_RESULT fmodFileOpen ( const char *name, unsigned int *filesize, void **hand
 }
 
 //----------------------------------------------------------------//
-FMOD_RESULT fmodFileClose ( void *handle, void *userdata ) {
+FMOD_RESULT F_CALLBACK fmodFileClose ( void *handle, void *userdata ) {
     
     ZLFileStream* stream = ( ZLFileStream* ) handle;
     stream->Close ();
@@ -43,7 +46,7 @@ FMOD_RESULT fmodFileClose ( void *handle, void *userdata ) {
 }
 
 //----------------------------------------------------------------//
-FMOD_RESULT fmodFileRead ( void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata ) {
+FMOD_RESULT F_CALLBACK fmodFileRead ( void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata ) {
     
     ZLFileStream* stream = ( ZLFileStream* ) handle;
     *bytesread = stream->ReadBytes ( buffer, sizebytes );
@@ -55,7 +58,7 @@ FMOD_RESULT fmodFileRead ( void *handle, void *buffer, unsigned int sizebytes, u
 }
 
 //----------------------------------------------------------------//
-FMOD_RESULT fmodFileSeek ( void *handle, unsigned int pos, void *userdata ) {
+FMOD_RESULT F_CALLBACK fmodFileSeek ( void *handle, unsigned int pos, void *userdata ) {
     
     ZLFileStream* stream = ( ZLFileStream* ) handle;
     if ( stream->Seek ( pos, SEEK_SET ) ) {
@@ -203,6 +206,15 @@ int MOAIFmodStudio::_setBGMVolume ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+int MOAIFmodStudio::_setLogEnabled ( lua_State* L ) {
+    
+	MOAILuaState state ( L );
+	
+    logEnabled = state.GetValue < bool >( 1, true );
+    return 0;
+}
+
+//----------------------------------------------------------------//
 int MOAIFmodStudio::_setSFXVolume ( lua_State* L ) {
     
 	MOAILuaState state ( L );
@@ -223,6 +235,9 @@ void MOAIFmodStudio::CloseSoundSystem () {
 
 	if ( !this->mSoundSys ) return;
 	
+	// Close can hang if performed in suspended mixer state
+	this->Resume ();
+
     FMOD_System_Close ( this->mSoundSys );
 	FMOD_System_Release ( this->mSoundSys );
 	this->mSoundSys = 0;
@@ -303,6 +318,7 @@ void MOAIFmodStudio::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "mute",				_mute },
 		{ "muteBGM",			_muteBGM },
 		{ "muteSFX",			_muteSFX },
+        { "setLogEnabled",      _setLogEnabled },
 		{ "setVolume",			_setVolume },
 		{ "setBGMVolume",		_setBGMVolume },
 		{ "setSFXVolume",		_setSFXVolume },

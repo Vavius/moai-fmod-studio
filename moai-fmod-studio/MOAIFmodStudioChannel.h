@@ -70,6 +70,7 @@ public:
 	float		GetPan				();
 	float		GetPitch			();
 	float		GetVolume			();
+    bool        IsPlaying           ();
 				MOAIFmodStudioChannel	();
 				~MOAIFmodStudioChannel	();
 	void		Play				( MOAIFmodStudioSound* sound, int loopCount );

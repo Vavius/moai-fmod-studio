@@ -7,7 +7,7 @@
 #include <moai-fmod-studio/MOAIFmodStudioSound.h>
 
 #ifdef MOAI_OS_IPHONE
-    #include <fmod_ios.h>
+	#include <fmod_ios.h>
     #include <AudioToolbox/AudioToolbox.h>
     #include <AudioToolbox/AudioServices.h>
 #endif
@@ -50,11 +50,11 @@ void interruptionListenerCallback ( void *inUserData, UInt32 interruptionState )
 #endif
 
 //----------------------------------------------------------------//
-void MOAIFmodStudioAppFinalize () {
+void AKUFmodStudioAppFinalize () {
 }
 
 //----------------------------------------------------------------//
-void MOAIFmodStudioAppInitialize () {
+void AKUFmodStudioAppInitialize () {
 
 #ifdef MOAI_OS_IPHONE
     AudioSessionInitialize ( NULL, NULL, interruptionListenerCallback, NULL );
@@ -63,8 +63,8 @@ void MOAIFmodStudioAppInitialize () {
 }
 
 //----------------------------------------------------------------//
-void MOAIFmodStudioContextInitialize () {
-
+void AKUFmodStudioContextInitialize () {
+    
 	MOAIFmodStudio::Affirm ();
 	
 	REGISTER_LUA_CLASS ( MOAIFmodStudio )
@@ -73,17 +73,17 @@ void MOAIFmodStudioContextInitialize () {
 }
 
 //----------------------------------------------------------------//
-void MOAIFmodStudioUpdate () {
+void AKUFmodStudioUpdate () {
 
 	MOAIFmodStudio::Get ().Update ();
 }
 
 //----------------------------------------------------------------//
 void AKUFmodStudioPause() {
-    MOAIFmodStudio::Get ().Suspend ();
+	MOAIFmodStudio::Get ().Suspend ();
 }
 
 //----------------------------------------------------------------//
 void AKUFmodStudioResume() {
-    MOAIFmodStudio::Get ().Resume ();
+	MOAIFmodStudio::Get ().Resume ();
 }
