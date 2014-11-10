@@ -50,11 +50,11 @@ void interruptionListenerCallback ( void *inUserData, UInt32 interruptionState )
 #endif
 
 //----------------------------------------------------------------//
-void AKUFmodStudioAppFinalize () {
+void MOAIFmodStudioAppFinalize () {
 }
 
 //----------------------------------------------------------------//
-void AKUFmodStudioAppInitialize () {
+void MOAIFmodStudioAppInitialize () {
 
 #ifdef MOAI_OS_IPHONE
     AudioSessionInitialize ( NULL, NULL, interruptionListenerCallback, NULL );
@@ -63,7 +63,7 @@ void AKUFmodStudioAppInitialize () {
 }
 
 //----------------------------------------------------------------//
-void AKUFmodStudioContextInitialize () {
+void MOAIFmodStudioContextInitialize () {
     
 	MOAIFmodStudio::Affirm ();
 	
@@ -73,17 +73,17 @@ void AKUFmodStudioContextInitialize () {
 }
 
 //----------------------------------------------------------------//
-void AKUFmodStudioUpdate () {
+void MOAIFmodStudioUpdate () {
 
 	MOAIFmodStudio::Get ().Update ();
 }
 
 //----------------------------------------------------------------//
-void AKUFmodStudioPause() {
+void MOAIFmodStudioPause() {
 	MOAIFmodStudio::Get ().Suspend ();
 }
 
 //----------------------------------------------------------------//
-void AKUFmodStudioResume() {
+void MOAIFmodStudioResume() {
 	MOAIFmodStudio::Get ().Resume ();
 }

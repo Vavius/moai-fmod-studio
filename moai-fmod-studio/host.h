@@ -9,11 +9,11 @@
 
 #include <moai-core/host.h>
 
-AKU_API void	AKUFmodStudioAppFinalize		();
-AKU_API void	AKUFmodStudioAppInitialize		();
-AKU_API void	AKUFmodStudioContextInitialize	();
-AKU_API void	AKUFmodStudioUpdate             ();
-AKU_API void    AKUFmodStudioPause              ();
-AKU_API void    AKUFmodStudioResume             ();
+AKU_API void	MOAIFmodStudioAppFinalize		();
+AKU_API void	MOAIFmodStudioAppInitialize		();
+AKU_API void	MOAIFmodStudioContextInitialize	();
+AKU_API void	MOAIFmodStudioUpdate            ();
+AKU_API void    MOAIFmodStudioPause             ();
+AKU_API void    MOAIFmodStudioResume            ();
 
 #endif
